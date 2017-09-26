@@ -6,29 +6,74 @@ require_relative 'enemy'
 
 Window.width  = 800
 Window.height = 600
+font = Font.new(32)
+count = 0
+get_count = 0
+times = 0
+stage = 1
 
-player_img = Image.load("player.png")
+player_img = Image.load("man.png")
 player_img.setColorKey([0, 0, 0])
 
-enemy_img = Image.load("enemy.png")
+enemy_img = Image.load("very_important.png")
 enemy_img.setColorKey([0, 0, 0])
 
-player = Player.new(400, 500, player_img)
+clear_img = Image.load("graduate.png")
+clear_img.setColorKey([0, 0, 0])
 
+dead_img = Image.load("dead.png")
+dead_img.setColorKey([0, 0, 0])
+
+player = Player.new(400, 500, player_img)
 enemies = []
-10.times do
-  enemies << Enemy.new(rand(800), rand(600), enemy_img)
-end
 
 Window.loop do
-  break if Input.keyPush?(K_ESCAPE)
+  if stage == 0
+	Window.draw_font(280, 70, "卒業できました！", font)
+	Window.draw(200, 100, clear_img)
+	break if Input.keyPush?(K_ESCAPE)
+  end
 
-  Sprite.update(enemies)
-  Sprite.draw(enemies)
+  if stage == 2
+    Window.draw(200, 100, dead_img)
+	break if Input.keyPush?(K_ESCAPE)
+  end
 
-  player.update
-  player.draw
+  if stage == 1 
+    break if Input.keyPush?(K_ESCAPE)
 
-  # 当たり判定
-  Sprite.check(player, enemies)
-end
+    if count < 30
+	  if times % 50 == 0 && get_count < 20
+		enemies << Enemy.new(rand(800), 20, enemy_img)
+		count += 1
+	  end
+	  if get_count >= 20
+		stage = 0
+	    times = 0
+	  end	
+    end
+  
+    if count >= 30
+	  if get_count >= 20 && times < 1800
+		stage = 0
+	    times = 0
+	  end
+      if get_count < 20 && times > 1800
+	   stage = 2
+	  end 
+    end
+  
+    Sprite.update(enemies)
+    Sprite.draw(enemies)
+
+    player.update
+    player.draw
+
+    # 当たり判定
+    if Sprite.check(player, enemies)
+      get_count += 1
+    end	
+    Window.draw_font(0, 0, "#{get_count}単位", font)
+    times += 1
+  end
+end  

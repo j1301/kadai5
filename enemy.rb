@@ -2,7 +2,7 @@
 
 class Enemy < Sprite
   def update
-    self.y += 1
+    self.y += 2
     if self.y >= Window.height - self.image.height
       self.vanish
     end
