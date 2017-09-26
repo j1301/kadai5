@@ -11,6 +11,7 @@ count = 0
 get_count = 0
 times = 0
 stage = 1
+time_limit = 200
 
 player_img = Image.load("man.png")
 player_img.setColorKey([0, 0, 0])
@@ -42,26 +43,22 @@ Window.loop do
   if stage == 1 
     break if Input.keyPush?(K_ESCAPE)
 
-    if count < 30
-	  if times % 50 == 0 && get_count < 20
+    if count < 35
+	  if times % 50 == 0
 		enemies << Enemy.new(rand(800), 20, enemy_img)
 		count += 1
 	  end
-	  if get_count >= 20
-		stage = 0
-	    times = 0
-	  end	
-    end
-  
-    if count >= 30
-	  if get_count >= 20 && times < 1800
-		stage = 0
-	    times = 0
-	  end
-      if get_count < 20 && times > 1800
-	   stage = 2
-	  end 
-    end
+	end
+	
+	if time_limit == 0 && get_count > 25
+	  stage = 0
+	  times = 0
+	end
+
+    if time_limit == 0 && get_count <= 25
+       	stage = 2
+		times = 0
+	end	
   
     Sprite.update(enemies)
     Sprite.draw(enemies)
@@ -74,6 +71,10 @@ Window.loop do
       get_count += 1
     end	
     Window.draw_font(0, 0, "#{get_count}単位", font)
-    times += 1
+	if times % 9 == 0
+	  time_limit -= 1
+	end  
+	Window.draw_font(500, 0, "卒業まで残り#{time_limit}日", font)
+	times += 1
   end
 end  
